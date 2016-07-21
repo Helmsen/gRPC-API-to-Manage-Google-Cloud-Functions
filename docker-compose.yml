@@ -1,0 +1,24 @@
+version: '2'
+services:
+
+  grpcadapter:
+    image: wilhelmstephan/grpc-to-graphql-adapter
+    ports:
+      - "40022:40022"
+    environment:
+      # TODO SET DOCKER HOST IP
+      - API_HOST=<DOCKER-HOST-IP>
+      - API_PORT=50005
+      - API_PROTO_PATH=/api/staticFunctions.proto
+    volumes:
+      - ./volumeWithProtoFile:/api
+    command: ["node", "/fapra/graphQlServer.js", "40022"]
+
+  grpcadapterclient:
+    build: ./ContainerGRPCAdapterClient/
+    links:
+      - grpcadapter:grpcadapterc1
+    depends_on:
+      - grpcadapter
+    # TODO SPECIFY GOOGLE CLOUD FUNCTIONS PROJECT NAME
+    command: ["/fapra/callMethods.sh", "grpcadapterc1", "40022", "<PROJECT-NAME>"]
