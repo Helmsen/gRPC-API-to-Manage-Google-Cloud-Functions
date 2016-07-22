@@ -39,6 +39,7 @@ RUN export CLOUD_SDK_REPO="cloud-sdk-$(lsb_release -c -s)" && \
 # Folders
 # ---------
 RUN mkdir -p /fapra
+RUN mkdir -p /api
 
 # Files
 # ----------
@@ -46,7 +47,6 @@ COPY node_modules /fapra/node_modules
 COPY main.js /fapra/main.js
 COPY urlParser.js /fapra/urlParser.js
 COPY staticFunctions.proto /api/staticFunctions.proto
-COPY main.proto /api/main.proto
 COPY reverse/index.js /fapra/index.js
 
 # Environment
@@ -54,5 +54,6 @@ COPY reverse/index.js /fapra/index.js
 ENV API_PORT=50005
 ENV API_PROTO_PATH=/api/main.proto
 
+VOLUME /api
 EXPOSE 50005
 CMD ["node", "/fapra/main.js"]

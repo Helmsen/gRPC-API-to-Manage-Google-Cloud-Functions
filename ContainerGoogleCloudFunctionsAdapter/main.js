@@ -13,8 +13,6 @@ function main() {
   }
   var staticFunctionsPath = '/api/staticFunctions.proto';
   var staticFunctionFile = fileSystem.readFileSync(staticFunctionsPath).toString().split("\n");
-  var protoFile = fileSystem.readFileSync(protoFilePath).toString().split("\n");
-  console.log('Using ' + protoFilePath + ' as proto file.');
   // default port
   var port = 50005;
   if (process.env.API_PORT != null) {
@@ -23,23 +21,10 @@ function main() {
   console.log('Using port: ' + port + '\n');
 
   // load the proto file in memory
-  var grpcPackage = grpc.load(protoFilePath);
   var staticFunctionsPackage = grpc.load(staticFunctionsPath);
 
   // get functions
-  serviceFunctions = GetFunctionNames(grpcPackage);
   staticFunctions = GetFunctionNames(staticFunctionsPackage);
-
-  // map functions to URLs
-  for (var srv in serviceFunctions) {
-    var packageService = serviceFunctions[srv];
-
-    for (var i = 0; i < packageService.length; i++) {
-      var serviceFunction = packageService[i];
-	  //TODO parse for actual urls in proto file - serviceFunction.name contains name of the function
-      serviceFunction['URL'] = parseProtoFileForURL(protoFile, serviceFunction.name);
-    }
-  }
 
   // create the server
   server = new grpc.Server();
@@ -67,25 +52,6 @@ function main() {
       }
       console.log('Processed request\n');
     });
-  }
-
-  // create handler functions for serviceFunctions
-  var grpcHandlers = {};
-  for (var srv in serviceFunctions) {
-    var packageService = serviceFunctions[srv];
-    console.log('Create handler for ' + srv);
-
-    var callHandlers = {};
-    for (var i = 0; i < packageService.length; i++) {
-      var serviceFunction = packageService[i];
-      var methodBody = CreateRequestHandlerFunction(serviceFunction);
-      var handler = Function("call", "callback", methodBody);
-      callHandlers[serviceFunction.name] = handler;
-    }
-
-    var serviceObject = grpcPackage[packageService[0].parent.parent.name][packageService[0].parent.name].service;
-    grpcHandlers[srv] = callHandlers;
-    server.addProtoService(serviceObject, callHandlers);
   }
 
   // create handler functions for staticFunctions

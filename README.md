@@ -14,15 +14,17 @@ There is a preconfigured docker-compose test scenario. Before running it, you ha
 to build and run a docker container containing the API adapter manually:
 * change to directory ```ContainerGoogleCloudFunctionsAdapter```
 * execute ```docker build -t <containerImageName> .```
-* execute ```docker run -p 50005:50005 -it <containerImageName> bash``` (now you are in the container)
+* execute ```docker run -p 50005:50005 -v /api -it <containerImageName> bash``` (now you are in the container)
 * execute ```gcloud init``` and follow the instructions (answer "configure compute engine" with no)
-* start the api adapter ```/fapra/main.js```
+* start the api adapter ```node /fapra/main.js```
 
 These steps are required, because Google Cloud Functions has no automated way of
 authentication. Further you have to provide some information in the compose file:
 * Set environment variable API_HOST to the IP of the containers network
 interface or the network interface of the docker host
 * Add the name of a existing project of your Google Cloud Functions account to "command"
+* Add name of Google Cloud Functions adapter container to "volumes_from" property
+in order to retrieve the maim.proto file
 
 The parts of the compose file you have to change are annotated with TODO-comments.
 Finally run the test scenario with ```docker-compose up --build <pathToComposeFile>```.

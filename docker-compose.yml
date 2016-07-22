@@ -10,8 +10,9 @@ services:
       - API_HOST=<DOCKER-HOST-IP>
       - API_PORT=50005
       - API_PROTO_PATH=/api/staticFunctions.proto
-    volumes:
-      - ./volumeWithProtoFile:/api
+    volumes_from:
+      # TODO SET NAME OF GOOGLE CLOUD FUNCTIONS ADAPTER CONTAINER
+      - <containerName>
     command: ["node", "/fapra/graphQlServer.js", "40022"]
 
   grpcadapterclient:

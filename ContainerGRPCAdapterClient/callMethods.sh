@@ -39,8 +39,8 @@ requestId="$( sed 's/.*requestId\": \"\(.*\)\"/\1/' <<< $requestId)"
 echo "  RequestId: $requestId"
 
 printf "\n"
-echo "Wait 60s"
-sleep 60s
+echo "Wait 120s"
+sleep 120s
 
 printf "\n"
 echo "Call deployFunctionStatus() on Google Cloud Functions adapter"
